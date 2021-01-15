@@ -1,0 +1,73 @@
+{% extends "wd/layout.html" %} 
+{% block content %}
+<script>
+window.onload = function () {
+
+var chart = new CanvasJS.Chart("chartContainer", {
+	animationEnabled: true,  
+	title:{
+		text: "Ecology of game#{{game.id}}"
+	},
+	axisY: {
+		title: "Ecology",
+		valueFormatString: "#%",
+	},
+	axisX: {
+		title: "Round",
+	},
+	data: [{
+		type: "splineArea",
+		color: "rgba(54,158,173,.7)",
+		markerSize: 5,
+		xValueFormatString: "#",
+		yValueFormatString: "#%",
+		dataPoints: [
+			{ x: 0, y: 0 },
+			{% for round in rounds %}
+			{ x: {{ forloop.counter }}, y: {{round.ecology}}/100 },
+			
+			{% endfor %}
+		]
+	}]
+	});
+chart.render();
+
+}
+</script>
+<div class="container-fluid">
+    <div class="col-9 justify-content-md-center" id="chartContainer" style="height: 370px; width: 100%;"></div>
+</div>
+<div class="container-fluid ">
+	<div class="d-flex flex-wrap">
+            {% for c,v in cc.items %}
+                <div class="m-3 col-3 border">
+                    {% comment %} <img class="card-img-top" src="https://cancun-tennis-academy.com/wp-content/uploads/2019/02/usa-flag-100x100.png" style="width:100px" alt=""> {% endcomment %}
+                    <div class="card-body ">
+                        <h4 class="card-title">{{c}}</h4>
+                    	<label for="">President: {{c.president}}</label>
+                        <table class="table  ">
+                            <thead class="thead-inverse">
+                                <tr>
+                                    <th>Город:</th>
+                                    <th>Cтатус:</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    {% for vv in v %}
+                                        <tr>
+                                            <td scope="row">{{vv}}</td>
+                                            <td>{{vv.status}}%</td>
+                                            
+                                            {% comment %} <td>{{vv.shield}}</td> {% endcomment %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+</div>
+
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+{% endblock %}

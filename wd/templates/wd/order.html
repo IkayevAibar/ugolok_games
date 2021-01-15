@@ -1,0 +1,296 @@
+{% extends "wd/layout.html" %} 
+{% block content %}
+<div class="container">
+    {% comment %} {{form.as_p}} {% endcomment %}
+</div>
+<form action="." method="post" class="form-horizontal">
+{% csrf_token %}
+<div class="container padding" style="height:1000px">
+    <div class="row">
+        <h1>Приказ от {{mc}}</h1> 
+    </div>
+    <div class="row">
+        <h5>Доступный бюджет - стоимость приказа: 
+        <h5 id="budget">{{mc.budget}} </h5> - <h5 id="total_cost"> 0 </h5> = <h5 id="total_value">1000</h5></h5>
+    </div>
+    <div class="alert alert-danger d-none" id="cost_alert" role="alert">
+        Нехватка денег для отправки приказа!
+    </div>
+    <div class="alert alert-danger" id="round_alert" role="alert">
+        Раунд не выбран!
+    </div>
+    <div class="row">
+        <h5>Доступных ракет: {{mc.rockets}}</h5>
+    </div>
+    <div class="row" style="height:25px;">
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <label for="id_round">Раунд:</label>
+            {% for r in rounds %}
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="round" id="inlineRadio{{ forloop.counter }}" value="{{r.id}}">
+                    <label class="form-check-label" for="inlineRadio{{ forloop.counter }}">{{r.name}}</label>
+                </div>
+            {% endfor %}
+            
+            <div class="form-group">
+                <label class="sr-only" for="inputName">Hidden input label</label>
+                <input type="hidden" class="form-control" name="country" id="id_country" placeholder="" value="{{mc.id}}">
+            </div>
+            <div class="form-group">
+                <label class="sr-only" for="inputName">Hidden input label</label>
+                <input type="hidden" class="form-control" name="order_cost" id="id_order_cost" placeholder="" value="0">
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Город:</th>
+                        <th>статус(200):</th>
+                        <th>щит(300):</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for city in mcities %}
+                    <tr>
+                        <td scope="row">{{city.name}}</td>
+                        <td>
+                        <div class="d-flex justify-content-sm-between w-25">
+                            {{city.status}}%
+                            <input type="checkbox" name="status_for_city_{{ forloop.counter }}" value="True" id="id_status_for_city_{{ forloop.counter }}">
+                        </div>
+                        </td>
+                        <td>
+                        <div class="d-flex justify-content-sm-between w-25">
+                            {% if city.shield == True  %}
+                            Есть
+                            {% else %}
+                            Нет
+                            {% endif %}
+                            <input type="checkbox" name="shield_for_city_{{ forloop.counter }}" value="True" id="id_shield_for_city_{{ forloop.counter }}">
+
+                        </div>
+                        </td>
+                    </tr>
+                {% endfor %}  
+                </tbody>
+            </table>
+            <div class="form-check form-check-inline">
+                <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" name="eco_up" value="True"  id="id_eco_up"> Изучение экологии (200)
+                </label>
+            </div>
+            <div class="form-check form-check-inline">
+                <label class="form-check-label">
+                {% if mc.technology == False %} 
+                    <input class="form-check-input" type="checkbox" name="build_tech" id="id_build_tech" value="True"> Изучить ядерную технологию(500)
+                {% else %}
+                    Ядерная технология Изучена!
+                {% endif %}
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="">Создать ядерное оружие (250):</label>
+                {% if mc.technology == False %} 
+                    <div class="alert alert-primary" role="alert">
+                        <strong>Ядерная технология не Изучена!</strong>
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="id_buy_rockets">Hidden input label</label>
+                        <input type="hidden" class="form-control" name="buy_rockets" id="id_buy_rockets" placeholder="" value="0">
+                    </div>
+                    
+                {% else %}
+                {% if mc.rockets > 0 %}
+                    <select class="form-control" name="buy_rockets" id="id_buy_rockets">
+                        <option value="0" selected="">0</option>
+                        <option value="1" >1</option>
+                        <option value="2" >2</option>
+                        <option value="3" >3</option>
+                    </select>
+                {% else %}
+                Нет доступных ракет
+                {% endif %}
+                
+                {% endif %}
+            </div>
+            
+            <p><label>Отправить ракету на города:</label> </p><ul id="id_rockets_to">
+            {% if mc.rockets > 0 %}
+                {% for city in cities %}
+                    <li>
+                    <label for="id_rockets_to_{{city.id}}"><input type="checkbox" name="rockets_to" value="{{city.id}}" id="id_rockets_to_{{city.id}}">
+                        {{city.country}}|{{city.name}}
+                    </label>
+                    </li>
+                {% endfor %}
+            {% else %}
+                Нет доступных ракет
+            {% endif %}
+
+            </li>
+            </ul><p></p>
+            <p><label>Cанкции для стран(250):</label> </p>
+            <ul id="id_saction_to">
+                {% for c in cs %}
+                    <li>
+                    <label for="id_providers_{{ forloop.counter0 }}"><input type="checkbox" name="saction_to" value="{{c.id}}" id="id_saction_to_0">
+                        {{c.name}}
+                    </label>
+                </li>
+                {% endfor %}
+            </ul>
+            <p></p>
+        </div>
+
+    </div>
+    
+        <button type="submit" class="btn btn-primary btn-lg">Отправить приказ</button>
+
+</div>
+</form>
+
+<script>
+
+{% comment %} asd = document.getElementsByTagName('input');
+list_ = []
+
+function check_all_in_document(doc)
+{
+   var arr = new Array();
+   arr = document.getElementsByTagName('input');
+
+   for (var i = 0; i < arr.length; i++)
+   {
+       if (arr[i].type == 'checkbox')
+       {
+           arr[i].checked = true;
+       }
+   }
+} {% endcomment %}
+
+a = document.querySelector("#budget")
+b = document.querySelector("#total_cost")
+c = document.querySelector("#total_value")
+var objs = [
+    document.querySelector("#id_status_for_city_1"),
+    document.querySelector("#id_status_for_city_2"),
+    document.querySelector("#id_status_for_city_3"),
+    document.querySelector("#id_status_for_city_4"),
+    document.querySelector("#id_eco_up")
+    ];
+var objs2 = [
+    document.querySelector("#id_shield_for_city_1"),
+    document.querySelector("#id_shield_for_city_2"),
+    document.querySelector("#id_shield_for_city_3"),
+    document.querySelector("#id_shield_for_city_4")
+]
+var obj_2 = document.querySelector("#id_build_tech")
+var obj_3 = document.querySelector("#id_buy_rockets")
+var obj_4 = document.getElementsByName("saction_to")
+
+var dict = {
+    obj_2:500,
+    obj_3:250,
+    objs2:300,
+    objs:200,
+};
+
+{% comment %} let summ = 0;
+
+for(let i in objs){
+    
+}
+for (i = 0; i < objs.length; i++) {
+  if(objs[i].checked){
+        summ+=200
+    }
+}
+
+summ+=obj_2.checked?500:0
+summ+=obj_3.checked?250:0
+
+for (i = 0; i < obj_4.length; i++) {
+  if(obj_4[i].checked){
+        summ+=300
+    }
+} {% endcomment %}
+{% comment %} console.log(summ) {% endcomment %}
+{% comment %} b.innerHTML = summ {% endcomment %}
+
+
+
+function calc2(){
+    summ = parseInt(b.innerHTML)
+    if(this.checked){
+        if(this.id=="id_build_tech"){
+            summ+=500
+        }
+        else if(this.name=="saction_to"){
+            summ+=250
+        }
+        else{
+            if(this.id=="id_shield_for_city_1"||this.id=="id_shield_for_city_2"||this.id=="id_shield_for_city_3"||this.id=="id_shield_for_city_4"){
+                summ+=300
+                
+            }
+            else{
+                summ+=200;
+                this.parentElement.childNodes[0].textContent=(parseInt(this.parentElement.childNodes[0].textContent.split('%')[0]) + 25)+"%"
+            }
+        }
+    }
+    else{
+        if(this.id=="id_build_tech"){
+            summ-=500
+        }
+        else if(this.name=="saction_to"){
+            summ-=250
+        }
+        else{
+            if(this.id=="id_shield_for_city_1"||this.id=="id_shield_for_city_2"||this.id=="id_shield_for_city_3"||this.id=="id_shield_for_city_4"){
+                summ-=300
+            }
+            else{
+                summ-=200;
+                this.parentElement.childNodes[0].textContent=(parseInt(this.parentElement.childNodes[0].textContent.split('%')[0]) - 25)+"%"
+            }
+        }
+    }
+
+    b.innerHTML = summ;
+    c.innerHTML = parseInt(a.innerHTML) - parseInt(b.innerHTML);
+    if(c.innerHTML<0){
+        document.querySelector("body > form > div > button").disabled = true
+        document.querySelector("#cost_alert").className = "alert alert-danger";
+        document.querySelector("body > form > div > button").className = "btn btn-danger btn-lg"
+    }
+    else{
+        document.querySelector("body > form > div > button").disabled = false
+        document.querySelector("#cost_alert").className = "alert alert-danger d-none";
+        document.querySelector("body > form > div > button").className = "btn btn-primary btn-lg"
+    }
+    document.querySelector("#id_order_cost").value = b.innerHTML;
+};
+
+{% comment %} object.addEventListener("click", myScript); {% endcomment %}
+for (i = 0; i < objs.length; i++) {
+    objs[i].addEventListener("click", calc2);
+}
+for (i = 0; i < objs2.length; i++) {
+    objs2[i].addEventListener("click", calc2);
+}
+for (i = 0; i < obj_4.length; i++) {
+    obj_4[i].addEventListener("click", calc2);
+}
+obj_2.addEventListener("click", calc2);
+var rs=document.getElementsByName("round")
+for (i = 0; i < rs.length; i++) {
+    rs[i].addEventListener("click", function(){
+        document.querySelector("#round_alert").className = "alert alert-danger d-none";
+
+    });
+}
+</script>
+{% endblock %}

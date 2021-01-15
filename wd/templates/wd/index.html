@@ -1,0 +1,10 @@
+{% extends "wd/layout.html" %} 
+{% block content %} 
+    <div class="container">
+        {% comment %} <a name="" id="" class="btn btn-primary" href="games/create" role="button">создать игру</a> {% endcomment %}
+        {% for game in games  %}
+            <a name="" id="" class="btn btn-primary" href="{% url 'wd:game' game.id %}" role="button">Зайти в игру №{{game.id}}</a>
+            <br />
+        {% endfor %}
+    </div>
+{% endblock %}

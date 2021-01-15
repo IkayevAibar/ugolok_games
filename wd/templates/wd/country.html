@@ -1,0 +1,189 @@
+{% extends "wd/layout.html" %} 
+{% block content %}
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+<div class="container">
+    <div class="page-header">
+        <h1>{{c}}.<span class="pull-right label label-default">{{c.president }} :)</span></h1>
+    </div>
+    <div class="row">
+		<div class="col-md-6">
+            <div class="panel with-nav-tabs panel-success">
+                <div class="panel-heading">
+                        <ul class="nav nav-tabs">
+                            {% for city in cities %}
+                                <li><a href="#tab{{ forloop.counter }}success" data-toggle="tab">{{city.name}} #{{ forloop.counter }}</a></li>
+                            {% endfor %}
+                            <script>
+                            
+                            a = document.querySelector("body > div.container > div > div > div > div.panel-heading > ul > li:nth-child(1) > a");
+                            a2 = document.querySelector("body > div.container > div > div > div > div.panel-heading > ul > li:nth-child(2) > a");
+                            a3 = document.querySelector("body > div.container > div > div > div > div.panel-heading > ul > li:nth-child(3) > a");
+                            a4 = document.querySelector("body > div.container > div > div > div > div.panel-heading > ul > li:nth-child(4) > a");
+                            function asd_(){
+                                
+                                if(this.parentElement.className==""){
+                                    this.parentElement.className="active";
+                                    if(a==this){
+                                        a2.parentElement.className=""
+                                        a3.parentElement.className=""
+                                        a4.parentElement.className=""
+                                    }
+                                    if(a2==this){
+                                        a.parentElement.className=""
+                                        a3.parentElement.className=""
+                                        a4.parentElement.className=""
+                                    }
+                                    if(a3==this){
+                                        a.parentElement.className=""
+                                        a2.parentElement.className=""
+                                        a4.parentElement.className=""
+                                    }
+                                    if(a4==this){
+                                        a.parentElement.className=""
+                                        a2.parentElement.className=""
+                                        a3.parentElement.className=""
+                                    }
+                                }
+                                else{
+                                    this.parentElement.className="";
+                                }
+                            };
+                            a.addEventListener("click", asd_);
+                            a2.addEventListener("click", asd_);
+                            a3.addEventListener("click", asd_);
+                            a4.addEventListener("click", asd_);
+
+                            a.parentElement.className="active"
+
+                            </script>
+                        </ul>
+                </div>
+                <div class="panel-body">
+                    <div class="tab-content">
+                        {% for city in cities %}
+                            <div class="tab-pane" id="tab{{ forloop.counter }}success"> 
+                            <p>Статус города:{{city.status}}%</p>
+                            <p>Статус щита города:
+                            {% if city.shield == True %}
+                            Есть
+                            {% else %}
+                            Нет
+                            {% endif %}
+                            </div>
+                        {% endfor %}
+                        <script>
+                        document.querySelector("#tab1success").className="tab-pane fade in active"
+                        </script>
+                        
+                    </div>
+                </div>
+            </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th >Раунд:</th>
+                    <th>Статус #1:</th>
+                    <th>Статус #2:</th>
+                    <th>Статус #3:</th>
+                    <th>Статус #4:</th>
+                    <th>Щит #1:</th>
+                    <th>Щит #2:</th>
+                    <th>Щит #3:</th>
+                    <th>Щит #4:</th>
+                    <th>Кач ядерки:</th>
+                    <th>Покупка ракет:</th>
+                    <th>Улучшение экологии:</th>
+                    <th>Города под прицелом:</th>
+                    <th>Страны для санкции:</th>
+                    <th>Стоимость приказа:</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for order in orders%}
+                <tr>
+                    <td scope="row">{{forloop.counter}}</td>
+                    <td>{{order.status_for_city_1}}</td>
+                    <td>{{order.status_for_city_2}}</td>
+                    <td>{{order.status_for_city_3}}</td>
+                    <td>{{order.status_for_city_4}}</td>
+                    <td>{{order.shield_for_city_1}}</td>
+                    <td>{{order.shield_for_city_2}}</td>
+                    <td>{{order.shield_for_city_3}}</td>
+                    <td>{{order.shield_for_city_4}}</td>
+                    <td>{{order.build_tech}}</td>
+                    <td>{{order.buy_rockets}}</td>
+                    <td>{{order.eco_up}}</td>
+                    <td>{{order.rockets_to}}</td>
+                    <td>{{order.saction_to}}</td>
+                    <td>{{order.order_cost}}</td>
+                </tr>
+                
+            {% endfor %}
+            </tbody>
+        </table>
+            
+
+        </div>
+        
+	</div>
+</div>
+
+<br/>
+<style>
+
+.panel.with-nav-tabs .panel-heading{
+    padding: 5px 5px 0 5px;
+}
+.panel.with-nav-tabs .nav-tabs{
+	border-bottom: none;
+}
+.panel.with-nav-tabs .nav-justified{
+	margin-bottom: -1px;
+}
+/*** PANEL SUCCESS ***/
+.with-nav-tabs.panel-success .nav-tabs > li > a,
+.with-nav-tabs.panel-success .nav-tabs > li > a:hover,
+.with-nav-tabs.panel-success .nav-tabs > li > a:focus {
+	color: #3c763d;
+}
+.with-nav-tabs.panel-success .nav-tabs > .open > a,
+.with-nav-tabs.panel-success .nav-tabs > .open > a:hover,
+.with-nav-tabs.panel-success .nav-tabs > .open > a:focus,
+.with-nav-tabs.panel-success .nav-tabs > li > a:hover,
+.with-nav-tabs.panel-success .nav-tabs > li > a:focus {
+	color: #3c763d;
+	background-color: #d6e9c6;
+	border-color: transparent;
+}
+.with-nav-tabs.panel-success .nav-tabs > li.active > a,
+.with-nav-tabs.panel-success .nav-tabs > li.active > a:hover,
+.with-nav-tabs.panel-success .nav-tabs > li.active > a:focus {
+	color: #3c763d;
+	background-color: #fff;
+	border-color: #d6e9c6;
+	border-bottom-color: transparent;
+}
+.with-nav-tabs.panel-success .nav-tabs > li.dropdown .dropdown-menu {
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+.with-nav-tabs.panel-success .nav-tabs > li.dropdown .dropdown-menu > li > a {
+    color: #3c763d;   
+}
+.with-nav-tabs.panel-success .nav-tabs > li.dropdown .dropdown-menu > li > a:hover,
+.with-nav-tabs.panel-success .nav-tabs > li.dropdown .dropdown-menu > li > a:focus {
+    background-color: #d6e9c6;
+}
+.with-nav-tabs.panel-success .nav-tabs > li.dropdown .dropdown-menu > .active > a,
+.with-nav-tabs.panel-success .nav-tabs > li.dropdown .dropdown-menu > .active > a:hover,
+.with-nav-tabs.panel-success .nav-tabs > li.dropdown .dropdown-menu > .active > a:focus {
+    color: #fff;
+    background-color: #3c763d;
+}
+/********************************************************************/
+
+</style>
+{% endblock %}
