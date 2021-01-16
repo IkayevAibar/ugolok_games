@@ -27,7 +27,7 @@ urlpatterns = [
     path('main', views.index, name='index'),
     # path('', uviews.index, name='index'),
     # path('u/', views.user_list, name='user_list'),
-    # path('game/', views.enter, name='game'),
+    path('game/', views.enter, name='game'),
     # path('<str:room_name>/', views.room, name='room'),
     path('lobby/<int:game_id>/', views.lobby, name='lobby'),
     path('game/<int:game_id>/', views.game, name='game'),
@@ -35,6 +35,7 @@ urlpatterns = [
     path('game/<int:game_id>/country/', views.country, name='country'),
     path('game/<int:game_id>/orders/', views.orders, name='orders'),
     path('game/<int:game_id>/orders/apply/<int:round_id>/', views.apply_round, name='round_apply'),
+    path('game/<int:game_id>/orders/reset/', views.reset, name='reset'),
     path('lobby/create/', views.creategame, name='create'),
 ]
 

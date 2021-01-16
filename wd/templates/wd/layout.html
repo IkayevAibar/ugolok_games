@@ -81,7 +81,8 @@
           </div>
       </nav>
 {% if game.id %}
-    <div class="w3-sidebar w3-bar-block" style="width:15%">
+    <div class="w3-sidebar w3-bar-block w3-flat-midnight-blue" style="width:15%;right:0">
+    <layer class="w3-bar-item ">Навигатор:</layer>
     <a href="{% url 'wd:game' game.id %}" class="w3-bar-item w3-button">Статистика игры</a>
     <a href="{% url 'wd:order' game.id %}" class="w3-bar-item w3-button">Отдать Приказ</a>
     <a href="{% url 'wd:country' game.id %}" class="w3-bar-item w3-button">Инфо про свою Страну</a>
@@ -90,7 +91,7 @@
     {% endif %}
     </div>
 {% endif %}
-<div style="margin-left:15%">
+<div style="margin-right:5%">
     {% block content %}
     {% endblock %}
 </div>

@@ -58,6 +58,10 @@ class City(models.Model):
     status = models.IntegerField('СТАТУС',blank=True, null=True)
     def __str__(self):
         return self.name
+    def update_status(self,status_):
+        if(status_ and self.status>0):
+            self.status+=25
+    
 
 
 

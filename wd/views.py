@@ -164,6 +164,8 @@ def get_item(dictionary, key):
 
 @login_required
 def orders(request,game_id):
+    if(request.user.id!=1):
+        return redirect("wd:game",game_id)
     game = Game.objects.filter(id=game_id)[0]
     rounds = Round.objects.filter(game=game)
     countries = Country.objects.all()
@@ -189,6 +191,8 @@ def status_calc(cur_,status):
 
 @login_required
 def apply_round(request,game_id,round_id):
+    if(request.user.id!=1):
+        return redirect("wd:game",game_id)
     game = Game.objects.filter(id=game_id)[0]
     round_ = Round.objects.filter(id=round_id,game=game)[0]
     countries = Country.objects.all()
@@ -204,15 +208,15 @@ def apply_round(request,game_id,round_id):
         if(order!=None):
             country = Country.objects.filter(id=order.country.id).first()
             cities = City.objects.filter(country=country)
-            print(status_calc(cities[0].status,order.status_for_city_1))
-            cities[0].status = status_calc(cities[0].status,order.status_for_city_1)
-            cities[1].status = status_calc(cities[1].status,order.status_for_city_2)
-            cities[2].status = status_calc(cities[2].status,order.status_for_city_3)
-            cities[3].status = status_calc(cities[3].status,order.status_for_city_4)
-            cities[0].shield = order.shield_for_city_1
-            cities[1].shield = order.shield_for_city_2
-            cities[2].shield = order.shield_for_city_3
-            cities[3].shield = order.shield_for_city_4
+            o_l_ = [order.status_for_city_1,order.status_for_city_2,order.status_for_city_3,order.status_for_city_4]
+            o_l_2 = [order.shield_for_city_1,order.shield_for_city_2,order.shield_for_city_3,order.shield_for_city_4]
+            i = 0
+            for city in cities:
+                city.update_status(o_l_[i])
+                city.shield=o_l_2[i]
+                city.save(update_fields=["status","shield"]) 
+                i+=1
+            
             country.technology = order.build_tech
             country.rockets += order.buy_rockets
             if(order.eco_up):
@@ -223,13 +227,7 @@ def apply_round(request,game_id,round_id):
             if(order.saction_to!=None):
                 saction_to_list[country.id]=order.saction_to
             country.budget= country.budget - order.order_cost + (cities[0].status * 3 + cities[1].status * 3 + cities[2].status * 3 + cities[3].status * 3) *  round((round_.ecology/100))
-            print(status_calc(cities[0].status,order.status_for_city_1),order.shield_for_city_1)
-            print(cities[0].status,cities[0].shield)
-            print(cities[0].save(update_fields=["status","shield"]))       
-            cities[0].save(update_fields=["status","shield"])        
-            cities[1].save(update_fields=["status","shield"])        
-            cities[2].save(update_fields=["status","shield"])        
-            cities[3].save(update_fields=["status","shield"])     
+                
             country.save(update_fields=["technology","rockets","budget"])   
             round_.save(update_fields=["ecology"])
                 
@@ -276,7 +274,36 @@ def country(request,game_id):
     })
 
 
+def reset(request,game_id):
+    if(request.user.id!=1):
+        return redirect("wd:game",game_id)
+    game = Game.objects.filter(id=game_id).first()
+    c=Country.objects.filter(game=game)
+    for country in c:
+        cities = City.objects.filter(country=country)
+        country.budget = 1000
+        country.technology = False
+        country.rockets = 0
+        i = 0
+        for city in cities:
+            city.shield = False
+            if(i == 0):
+                city.status = 100
+            elif(i==1):
+                city.status = 80
+            elif(i==2):
+                city.status = 60
+            else:
+                city.status = 40
+            i+=1
+            city.save(update_fields=["shield","status"])
+        country.save(update_fields=["technology","rockets","budget"])
+    return redirect("wd:orders",game_id)
+        
+            
+            
 
+    
 
 
 
