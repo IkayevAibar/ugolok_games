@@ -1,6 +1,11 @@
 {% extends "wd/layout.html" %} 
 {% block content %}
+{% load static %}
+{{timer}}
 <script>
+
+
+
 window.onload = function () {
 
 var chart = new CanvasJS.Chart("chartContainer", {
@@ -11,29 +16,36 @@ var chart = new CanvasJS.Chart("chartContainer", {
 	axisY: {
 		title: "Экология",
 		valueFormatString: "#%",
+        
 	},
 	axisX: {
 		title: "Раунд",
+        time: {
+            unit: 'number',
+            unitStepSize: 1,
+        }
 	},
 	data: [{
 		type: "splineArea",
 		color: "rgba(54,158,173,.7)",
 		markerSize: 5,
+        
 		xValueFormatString: "#",
-		yValueFormatString: "#%",
+		yValueFormatString: "#",
 		dataPoints: [
 			{ x: 0, y: 0 },
 			{% for round in rounds %}
-			{ x: {{ forloop.counter }}, y: {{round.ecology}}/100 },
-			
+			    { x: {{ forloop.counter }}, y: {{round.ecology}}/100 },
 			{% endfor %}
 		]
-	}]
+	}],
+    
 	});
 chart.render();
 
 }
 </script>
+
 <div class="container-fluid">
     <div class="col-9 justify-content-md-center" id="chartContainer" style="height: 370px; width: 100%;"></div>
 </div>
@@ -70,4 +82,5 @@ chart.render();
 </div>
 
 <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 {% endblock %}

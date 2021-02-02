@@ -27,7 +27,7 @@ urlpatterns = [
     path('main', views.index, name='index'),
     # path('', uviews.index, name='index'),
     # path('u/', views.user_list, name='user_list'),
-    path('game/', views.enter, name='game'),
+    # path('chat/', views.enter, name='chat'),
     # path('<str:room_name>/', views.room, name='room'),
     path('lobby/<int:game_id>/', views.lobby, name='lobby'),
     path('game/<int:game_id>/', views.game, name='game'),
@@ -37,10 +37,14 @@ urlpatterns = [
     path('game/<int:game_id>/orders/apply/<int:round_id>/', views.apply_round, name='round_apply'),
     path('game/<int:game_id>/orders/reset/', views.reset, name='reset'),
     path('lobby/create/', views.creategame, name='create'),
+    # path('websockets/', views.websockets, name='websockets'),
 ]
 
 
 if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
-    urlpatterns += static(r'^favicon.ico$', document_root='media/logo/favicon.ico')
+    urlpatterns += static(r'^favicon.ico$', document_root='media/ugolok_logo.png')
+

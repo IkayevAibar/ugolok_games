@@ -33,20 +33,23 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'channels',
     'wd',
     'multiselectfield',
+    'corsheaders',
+    "countdowntimer_model",
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -74,8 +77,7 @@ TEMPLATES = [
 
 
 WSGI_APPLICATION = 'ugolok.wsgi.application'
-ASGI_APPLICATION = "ugolok.asgi.application"
-
+# ASGI_APPLICATION = "asgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
@@ -99,7 +101,15 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
    }
 }
-
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "asgi_redis.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
+#         },
+#         "ROUTING": "chat.routing.channel_routing",
+#     },
+# }
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
@@ -143,3 +153,71 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = posixpath.join(*(BASE_DIR.split(os.path.sep) + ['media']))
 
 AUTH_USER_MODEL = "wd.Player"
+
+# ASGI_APPLICATION = 'ugolok.asgi.application'
+# print(os.path.dirname("asgi"))
+ASGI_APPLICATION = "ugolok.asgi.application" 
+
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:8080',
+    'http://localhost:8081',
+    'http://127.0.0.1:8000',
+    'http://127.0.0.1:4200',
+    'http://localhost:1313',
+    'http://localhost:4200',
+    'http://gografen.com',
+    'http://gografen.com:8000',
+    'http://.gografen.com',
+    'http://.gografen.com:8000',
+    'http://5.23.50.132:8080',
+    'http://5.23.50.132:8000',
+    'http://5.23.50.132:4200',
+    'http://192.168.1.23:8080',
+    'http://localhost:3000',
+	'http://127.0.0.1:3000',
+	'http://localhost:8080',
+]
+
+CORS_ORIGIN_ALLOW_ALL = True # If this is used then CORS_ORIGIN_WHITELIST will not have any effect
+CORS_ALLOW_CREDENTIALS = True
+ # If this is used, then not need to use CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_REGEX_WHITELIST = [
+    'http://localhost:8080',
+    'http://localhost:8081',
+    'http://127.0.0.1:8000',
+    'http://127.0.0.1:4200',
+    'http://localhost:1313',
+    'http://localhost:4200',
+    'http://gografen.com',
+    'http://gografen.com:8000',
+    'http://.gografen.com',
+    'http://.gografen.com:8000',
+    'http://5.23.50.132:8080',
+    'http://5.23.50.132:8000',
+    'http://5.23.50.132:4200',
+    'http://192.168.1.23:8080',
+    'http://localhost:3000',
+	'http://127.0.0.1:3000',
+	'http://localhost:8080',
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]

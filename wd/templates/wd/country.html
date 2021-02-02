@@ -6,81 +6,31 @@
 <!------ Include the above in your HEAD tag ---------->
 <div class="container">
     <div class="page-header">
-        <h1>{{c}}.<span class="pull-right label label-default">{{c.president }} :)</span></h1>
+        <h1>{{c}}<span class="pull-right label label-default">{{c.president }} :)</span></h1>
+        <h3>Бюджет страны:{{c.budget}}</h3>
+        <h3>Ракет:{{c.rockets}}</h3>
+        <h3>Ядерная Технология: {{c.technology}}</h3>
     </div>
     <div class="row">
-		<div class="col-md-6">
-            <div class="panel with-nav-tabs panel-success">
-                <div class="panel-heading">
-                        <ul class="nav nav-tabs">
-                            {% for city in cities %}
-                                <li><a href="#tab{{ forloop.counter }}success" data-toggle="tab">{{city.name}} #{{ forloop.counter }}</a></li>
-                            {% endfor %}
-                            <script>
-                            
-                            a = document.querySelector("body > div.container > div > div > div > div.panel-heading > ul > li:nth-child(1) > a");
-                            a2 = document.querySelector("body > div.container > div > div > div > div.panel-heading > ul > li:nth-child(2) > a");
-                            a3 = document.querySelector("body > div.container > div > div > div > div.panel-heading > ul > li:nth-child(3) > a");
-                            a4 = document.querySelector("body > div.container > div > div > div > div.panel-heading > ul > li:nth-child(4) > a");
-                            function asd_(){
-                                
-                                if(this.parentElement.className==""){
-                                    this.parentElement.className="active";
-                                    if(a==this){
-                                        a2.parentElement.className=""
-                                        a3.parentElement.className=""
-                                        a4.parentElement.className=""
-                                    }
-                                    if(a2==this){
-                                        a.parentElement.className=""
-                                        a3.parentElement.className=""
-                                        a4.parentElement.className=""
-                                    }
-                                    if(a3==this){
-                                        a.parentElement.className=""
-                                        a2.parentElement.className=""
-                                        a4.parentElement.className=""
-                                    }
-                                    if(a4==this){
-                                        a.parentElement.className=""
-                                        a2.parentElement.className=""
-                                        a3.parentElement.className=""
-                                    }
-                                }
-                                else{
-                                    this.parentElement.className="";
-                                }
-                            };
-                            a.addEventListener("click", asd_);
-                            a2.addEventListener("click", asd_);
-                            a3.addEventListener("click", asd_);
-                            a4.addEventListener("click", asd_);
-
-                            a.parentElement.className="active"
-
-                            </script>
-                        </ul>
+		<div class="col-md-6 d-flex">
+        {% for city in cities %}
+            <div class="card" style="width: 200px;">
+                <!--tips: add .text-center,.text-right to the .card to change card text alignment-->
+                <div class="card-header">
+                    {{city.name}}
                 </div>
-                <div class="panel-body">
-                    <div class="tab-content">
-                        {% for city in cities %}
-                            <div class="tab-pane" id="tab{{ forloop.counter }}success"> 
-                            <p>Статус города:{{city.status}}%</p>
-                            <p>Статус щита города:
-                            {% if city.shield == True %}
-                            Есть
-                            {% else %}
-                            Нет
-                            {% endif %}
-                            </div>
-                        {% endfor %}
-                        <script>
-                        document.querySelector("#tab1success").className="tab-pane fade in active"
-                        </script>
-                        
-                    </div>
+                <div class="card-body">
+                    <h5 class="card-title">Уровень жизни: {{city.status}}%</h5>
+                    <h5 class="card-title">Щит города: {{city.shield}}</h5>
+                </div>
+                <div class="card-footer text-muted">
+                    Город
                 </div>
             </div>
+            {% comment %} <li><a href="#tab{{ forloop.counter }}success" data-toggle="tab">{{city.name}} #{{ forloop.counter }}</a></li> {% endcomment %}
+        {% endfor %}
+            
+        </div>
         <table class="table">
             <thead>
                 <tr>

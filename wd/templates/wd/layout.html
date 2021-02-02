@@ -2,31 +2,33 @@
 <html>
 {% comment %} {% extends "app/head.html" %} {% endcomment %}
 <head>
-    <script src="/assets/vendor/chart.js/dist/Chart.min.js"></script>
-    <script src="/assets/vendor/chart.js/dist/Chart.extension.js"></script>
+
+    {% load static %}
+    {% comment %} <script src="/assets/vendor/chart.js/dist/Chart.min.js"></script> {% endcomment %}
+    {% comment %} <script src="/assets/vendor/chart.js/dist/Chart.extension.js"></script> {% endcomment %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <!-- Favicon -->
-    <link href="/assets/img/brand/favicon.png" rel="icon" type="image/png">
+    {% comment %} <link href="/assets/img/brand/favicon.png" rel="icon" type="image/png"> {% endcomment %}
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
 
     <!-- Icons -->
-    <link href="/assets/vendor/nucleo/css/nucleo.min.css" rel="stylesheet">
-    <link href="/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet">
+    {% comment %} <link href="/assets/vendor/nucleo/css/nucleo.min.css" rel="stylesheet"> {% endcomment %}
+    {% comment %} <link href="/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet"> {% endcomment %}
 
     <!-- Argon CSS -->
-    <link type="text/css" href="/assets/css/argon.min.css" rel="stylesheet">
+    {% comment %} <link type="text/css" href="/assets/css/argon.min.css" rel="stylesheet"> {% endcomment %}
     <!-- Core -->
-    <script src="/assets/vendor/jquery/dist/jquery.min.js"></script>
-    <script src="/assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    {% comment %} <script src="/assets/vendor/jquery/dist/jquery.min.js"></script> {% endcomment %}
+    {% comment %} <script src="/assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script> {% endcomment %}
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
     <!-- Argon JS -->
-    <script src="/assets/js/argon.min.js"></script>
+    {% comment %} <script src="/assets/js/argon.min.js"></script> {% endcomment %}
     
     {% load static %}
     <meta charset="utf-8">
@@ -82,6 +84,88 @@
       </nav>
 {% if game.id %}
     <div class="w3-sidebar w3-bar-block w3-flat-midnight-blue" style="width:15%;right:0">
+    <div class="container">
+    <h2>
+        <kbd id="chat-log">0</kbd>
+    </h2>
+    <input id="chat-message-input" class="d-none" type="text" size="100"><br>
+    {% if user.is_staff %}
+        <input id="chat-message-start" type="button" value="Start">
+        <input id="chat-message-stop" type="button" value="Stop">
+        <input id="chat-message-pause" type="button" value="Pause">
+    {% else %}
+        <input id="chat-message-start" class="btn btn-primary disabled d-none" type="button" value="Start">
+        <input id="chat-message-stop" class="btn btn-primary disabled d-none" type="button" value="Stop">
+        <input id="chat-message-pause" class="btn btn-primary disabled d-none" type="button" value="Pause">
+    {% endif %}
+</div>
+    
+    <script>
+        let stopped = false;
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/wd/game/'
+            + location.pathname.split('/')[2]
+            + '/'
+        );
+        
+        
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            if (data.message === 0) {
+                printNumbersForEvery2Sec();
+                document.querySelector('#chat-log').value += ('started' + '\n');
+                stopped=false;
+            } else if (data.message === -1) {
+                stopped=true;
+            } else if (data.message === 1) {
+                document.querySelector('#chat-log').value += ('paused' + '\n');
+            } else {
+                document.querySelector('#chat-log').value += (data.message + '\n');
+            }
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+
+        document.querySelector('#chat-message-start').onclick = function(e) {
+            const message = "{{user.username}}: " + "start";
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+        };
+        document.querySelector('#chat-message-stop').onclick = function(e) {
+            const message = "{{user.username}}: " + "stop";
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+        };
+        document.querySelector('#chat-message-pause').onclick = function(e) {
+            const message = "{{user.username}}: " + "pause";
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+        };
+        var c = 1;
+        var interval = ""
+        const printNumbersForEvery2Sec = ()=>{
+            interval = setInterval(function(){yourFunction()}, 1000);
+        }
+
+        function yourFunction() {
+            document.querySelector('#chat-log').innerHTML = (c + '\n');
+            {% comment %} console.log(c)  {% endcomment %}
+            c+=1;
+            if(stopped){
+                clearInterval(interval);
+                c=1
+            } 
+        }            
+        
+    </script>
     <layer class="w3-bar-item ">Навигатор:</layer>
     <a href="{% url 'wd:game' game.id %}" class="w3-bar-item w3-button">Статистика игры</a>
     <a href="{% url 'wd:order' game.id %}" class="w3-bar-item w3-button">Отдать Приказ</a>
@@ -117,9 +201,9 @@
  
         
 
-    <script src="{% static 'app/scripts/jquery-1.10.2.js' %}"></script>
+    {% comment %} <script src="{% static 'app/scripts/jquery-1.10.2.js' %}"></script>
     <script src="{% static 'app/scripts/bootstrap.js' %}"></script>
-    <script src="{% static 'app/scripts/respond.js' %}"></script>
+    <script src="{% static 'app/scripts/respond.js' %}"></script> {% endcomment %}
 {% block scripts %}{% endblock %}
 
 </body>

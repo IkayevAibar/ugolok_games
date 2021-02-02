@@ -13,6 +13,8 @@ from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
 import wd.routing
+# from channels.auth import channel_session_user_from_http
+# from channels import Group
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ugolok.settings')
 

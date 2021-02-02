@@ -1,0 +1,66 @@
+{{timer}}
+<script>
+const url = 'https://timercheck.io/ugolok-timer';
+var invocation = new XMLHttpRequest();
+{% comment %} var url = 'http://bar.other/resources/public-data/'; {% endcomment %}
+
+function callOtherDomain() {
+  if(invocation) {
+    invocation.open('GET', url, true);
+    invocation.withCredentials = true;
+    invocation.setRequestHeader("Access-Control-Allow-Headers", "Content-Type");
+    invocation.setRequestHeader("Access-Control-Allow-Origin", "*");
+    invocation.setRequestHeader("Access-Control-Allow-Methods", "OPTIONS,POST,GET");
+    invocation.setRequestHeader('X-Alt-Referer', url);
+    invocation.setRequestHeader("Accept","text/plain");
+    invocation.setRequestHeader("Content-Type","text/plain");
+
+    invocation.send(null);
+  }
+}
+{% comment %} callOtherDomain(); {% endcomment %}
+
+{% comment %} fetch(url, {
+  method: "GET",
+  headers: [
+    ["Content-Type", "*/*"],
+    ["Access-Control-Allow-Headers", "Content-Type"],
+    ["Access-Control-Allow-Origin", "*"],
+    ["Access-Control-Allow-Methods", "OPTIONS,POST,GET"],
+    ["Accept","*/*"],
+    ["X-Content-Type-Options","nosniff"],
+    ["Cross-Origin-Resource-Policy","cross-origin"],
+    ["Access-Control-Allow-Credentials","true"],
+    ["Origin","no-referrer"],
+    ["User-Agent","Mozilla/5.0"]
+  ],
+  mods:"cors",
+  credentials: "include"
+}).then(responce=>{console.log(responce)}); {% endcomment %}
+
+var myHeaders = new Headers();
+{% comment %} 
+myHeaders.append('GET', 'POST', 'OPTIONS');
+myHeaders.append('Content-Type', 'application/json');
+myHeaders.append('Accept', 'application/json');
+{% endcomment %}
+myHeaders.append("Access-Control-Allow-Headers", "Content-Type");
+myHeaders.append("Access-Control-Allow-Origin", "http://127.0.0.1:8000");
+myHeaders.append("Access-Control-Allow-Methods", "OPTIONS,POST,GET");
+myHeaders.append('Access-Control-Allow-Credentials', 'true');
+myHeaders.append('Content-Type', '*/*');
+myHeaders.append('Origin','http://127.0.0.1:8000');
+
+var requestOptions = {
+  method: 'GET',
+  headers: myHeaders,
+}; 
+
+fetch("http://timercheck.io/ugolok-timer")
+  .then(response => response.text())
+  .then(result => console.log(result))
+  .catch(error => console.log('error', error));
+
+
+
+</script>

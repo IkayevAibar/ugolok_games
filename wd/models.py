@@ -8,19 +8,30 @@ from django.core.cache import cache
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.validators import UnicodeUsernameValidator
-from multiselectfield import MultiSelectField
 
-# class LoggedInUser(models.Model):
-    # user = models.OneToOneField('Player',on_delete=models.SET_NULL, related_name='logged_in_user',blank=True, null=True)
-#is_superuser, groups, user_permissions, password, last_login, username, email, is_active, first_name, last_name, is_staff, date_joined
 
-# MY_CHOICES2 = (
-#     (1, 'Item title 2.1'),
-#     (2, 'Item title 2.2'),
-#     (3, 'Item title 2.3'),
-#     (4, 'Item title 2.4'),
-#     (5, 'Item title 2.5')
-#                )
+class Timer(models.Model):
+    game = models.ForeignKey('Game', related_name='gametimer', on_delete=models.CASCADE,blank=True, null=True)
+    name = models.CharField(max_length=30,blank=True, null=True)
+    status = models.CharField(max_length=5,blank=True, null=True)
+    message = models.CharField(max_length=30,blank=True, null=True)
+    start_seconds = models.IntegerField(_("start_seconds"),blank=True, null=True)
+    seconds_elapsed = models.IntegerField(_("seconds_elapsed"),blank=True, null=True)
+    seconds_remaining = models.IntegerField(_("seconds_remaining"),blank=True, null=True)
+
+    def __str__(self):
+        return (str(self.start_seconds)+ " - " + str(self.seconds_elapsed) + " = " + str(self.seconds_remaining))
+
+class Room(models.Model):
+    name = models.TextField()
+    label = models.SlugField(unique=True)
+
+class Message(models.Model):
+    room = models.ForeignKey(Room, related_name='messages', on_delete=models.CASCADE)
+    handle = models.TextField()
+    message = models.TextField()
+    timestamp = models.DateTimeField(default=timezone.now, db_index=True)
+
 
 class Player(AbstractUser):
     status=models.CharField(_("status"), max_length=50,blank=True, null=True)

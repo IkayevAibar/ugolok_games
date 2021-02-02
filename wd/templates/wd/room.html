@@ -10,39 +10,28 @@
 </div>
     
     <script>
-        const roomName = JSON.parse(document.getElementById('room-name').textContent);
-
-        const chatSocket = new WebSocket(
-            'ws://'
-            + window.location.host
-            + '/ws/wd/'
-            + roomName
-            + '/'
-        );
-
-        chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.message + '\n');
-        };
-
-        chatSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
-        };
-
-        document.querySelector('#chat-message-input').focus();
-        document.querySelector('#chat-message-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                document.querySelector('#chat-message-submit').click();
+        {% comment %} let stopped = false; {% endcomment %}
+        {% comment %} const roomName = JSON.parse(document.getElementById('room-name').textContent); {% endcomment %}
+        var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+        var chat_socket = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + "/chat" + window.location.pathname);
+        
+        $('#chatform').on('submit', function(event) {
+            var message = {
+                handle: $('#handle').val(),
+                message: $('#message').val(),
             }
-        };
+            chat_socket.send(JSON.stringify(message));
+            return false;
+        });
 
-        document.querySelector('#chat-message-submit').onclick = function(e) {
-            const messageInputDom = document.querySelector('#chat-message-input');
-            const message = "{{user.username}}: " + messageInputDom.value;
-            chatSocket.send(JSON.stringify({
-                'message': message
-            }));
-            messageInputDom.value = '';
+        chatsock.onmessage = function(message) {
+            var data = JSON.parse(message.data);
+            $('#chat').append('<tr>' 
+                + '<td>' + data.timestamp + '</td>' 
+                + '<td>' + data.handle + '</td>'
+                + '<td>' + data.message + ' </td>'
+            + '</tr>');
         };
+        
     </script>
 {% endblock %}

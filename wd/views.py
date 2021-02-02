@@ -28,7 +28,7 @@ def index(request):
 User = get_user_model()
 
 def enter(request):
-    return render(request, 'wd/game.html')
+    return render(request, 'wd/search_chat.html')
 
 @login_required(login_url='/login/')
 def room(request, room_name):
@@ -82,6 +82,7 @@ def game(request, game_id):
             city_list.append(city)
         list_[country] = city_list
         city_list={}
+    
     return render(request, 'wd/game.html', {
         'game': game,
         'cc':list_,
@@ -95,13 +96,6 @@ class OrderForm(forms.ModelForm):
         model=Order
         fields=('round','country')
 
-def parser(obj):
-    if():
-        if (obj=='True'):
-            return True
-        else:
-            return False
-    return False
 
 def clean_values(obj):
     field = ""
@@ -125,7 +119,6 @@ def order(request,game_id):
         print(form.data)
         print(form.is_valid())
         if(form.is_valid()):
-            print(parser(form.data.get('status_for_city_1'))," <-> " , form.data.get('status_for_city_1'))
             Order.objects.create(
                 country=Country.objects.filter(id=int(form.data['country']))[0],
                 round=Round.objects.filter(id=int(form.data['round']))[0],
@@ -216,8 +209,13 @@ def apply_round(request,game_id,round_id):
                 city.shield=o_l_2[i]
                 city.save(update_fields=["status","shield"]) 
                 i+=1
-            
-            country.technology = order.build_tech
+            if(order.build_tech):
+                country.technology = order.build_tech
+                if(round_.ecology>0):
+                    round_.ecology -= 10
+            if(order.buy_rockets>0):
+                if(round_.ecology>0):
+                    round_.ecology -= 15*order.buy_rockets
             country.rockets += order.buy_rockets
             if(order.eco_up):
                 if(round_.ecology<86):
@@ -226,7 +224,7 @@ def apply_round(request,game_id,round_id):
                 rockets_to_list[country.id]=order.rockets_to
             if(order.saction_to!=None):
                 saction_to_list[country.id]=order.saction_to
-            country.budget= country.budget - order.order_cost + (cities[0].status * 3 + cities[1].status * 3 + cities[2].status * 3 + cities[3].status * 3) *  round((round_.ecology/100))
+            country.budget= country.budget - order.order_cost + (cities[0].status * 3 + cities[1].status * 3 + cities[2].status * 3 + cities[3].status * 3) -  50*round((round_.ecology/10))
                 
             country.save(update_fields=["technology","rockets","budget"])   
             round_.save(update_fields=["ecology"])
@@ -300,14 +298,24 @@ def reset(request,game_id):
         country.save(update_fields=["technology","rockets","budget"])
     return redirect("wd:orders",game_id)
         
-            
-            
+
 
     
 
 
 
+def chat_room(request, label):
+    # If the room with the given label doesn't exist, automatically create it
+    # upon first visit (a la etherpad).
+    room, created = Room.objects.get_or_create(label=label)
 
+    # We want to show the last 50 messages, ordered most-recent-last
+    messages = reversed(room.messages.order_by('-timestamp')[:50])
+
+    return render(request, "wd/room.html", {
+        'room': room,
+        'messages': messages,
+    })
 
 
 
